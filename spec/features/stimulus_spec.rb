@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe "/[USERNAME]/feed stimulus specs" do
-  it "the comment textarea height automatically resizes itself", js: true do
+  it "the comment textarea height automatically resizes itself", js: true, points: 5 do
     user = User.create(username: "alice", email: "alice@example.com", password: "password", avatar_image: File.open("#{Rails.root}/spec/support/test_image.jpeg"))
 
     sign_in(user)
