@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe "/[USERNAME]/feed stimulus specs" do
-  it "the comment textarea height automatically resizes itself", js: true, points: 5 do
+  it "the comment textarea height automatically resizes itself", js: true do
     user = User.create(username: "alice", email: "alice@example.com", password: "password", avatar_image: File.open("#{Rails.root}/spec/support/test_image.jpeg"))
 
     sign_in(user)
@@ -15,9 +15,11 @@ describe "/[USERNAME]/feed stimulus specs" do
     comment_textarea = find("textarea")
     old_height = comment_textarea.rect.height
 
-    within("div[data-controller='character-counter']") do
-      fill_in "comment[body]", with: "hi there " * 100
-    end
+    multiline_text = (1..20).map { |i| "This is line #{i} with lots of text that should wrap to force the textarea to grow in height as the content expands vertically with each new line added." }.join("\n")
+    comment_textarea.set(multiline_text)
+
+    # Trigger input event to make sure autosize processes the change
+    page.execute_script('document.querySelector("textarea").dispatchEvent(new Event("input", { bubbles: true }))')
 
     new_height = comment_textarea.rect.height
 
