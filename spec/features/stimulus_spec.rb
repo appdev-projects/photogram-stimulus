@@ -15,11 +15,12 @@ describe "/[USERNAME]/feed stimulus specs" do
     comment_textarea = find("textarea")
     old_height = comment_textarea.rect.height
 
-    multiline_text = (1..20).map { |i| "This is line #{i} with lots of text that should wrap to force the textarea to grow in height as the content expands vertically with each new line added." }.join("\n")
-    comment_textarea.set(multiline_text)
+    multiline_text = (1..20).map { |i| "This is line #{i} with lots of text that should wrap and force the comment form to grow." }.join("\n")
+    fill_in "comment[body]", with: multiline_text
 
-    # Trigger input event to make sure autosize processes the change
-    page.execute_script('document.querySelector("textarea").dispatchEvent(new Event("input", { bubbles: true }))')
+    # The fill_in command in Capybara changes the value programmatically but doesn't trigger the DOM events that autosize listens for.
+    # We need to actually execute the event to trigger the autosize controller.
+    page.execute_script("arguments[0].dispatchEvent(new Event('input'))", comment_textarea)
 
     new_height = comment_textarea.rect.height
 
